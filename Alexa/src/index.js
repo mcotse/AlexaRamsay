@@ -1,76 +1,91 @@
-
+var request = require('request');
 /**
  * App ID for the skill
  */
-var APP_ID = app_id; //replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
+var APP_ID = process.env.app_id; //replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
 
 /**
  * The AlexaSkill prototype and helper functions
  */
 var AlexaSkill = require('./AlexaSkill');
 
-var Chooser = function () {
+var Ramsey = function () {
     AlexaSkill.call(this, APP_ID);
 };
 
 // Extend AlexaSkill
-Chooser.prototype = Object.create(AlexaSkill.prototype);
-Chooser.prototype.constructor = Chooser;
+Ramsey.prototype = Object.create(AlexaSkill.prototype);
+Ramsey.prototype.constructor = Ramsey;
 
-Chooser.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
-    console.log("Chooser onSessionStarted requestId: " + sessionStartedRequest.requestId
+Ramsey.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
+    console.log("Ramsey onSessionStarted requestId: " + sessionStartedRequest.requestId
         + ", sessionId: " + session.sessionId);
     // any initialization logic goes here
 };
 
-Chooser.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
-    console.log("Chooser onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-    var speechOutput = "Welcome to Randomizer, Give me a few names to choose from and i will choose one at random";
-    var repromptText = "Give me some names";
+Ramsey.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
+    console.log("Ramsey onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
+    var speechOutput = "Welcome to Ramsey. I can guide you through recipes based on your dietitians perscription";
+    var repromptText = "ask for a recipe";
     response.ask(speechOutput, repromptText);
 };
 
-Chooser.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
-    console.log("Chooser onSessionEnded requestId: " + sessionEndedRequest.requestId
+Ramsey.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
+    console.log("Ramsey onSessionEnded requestId: " + sessionEndedRequest.requestId
         + ", sessionId: " + session.sessionId);
     // any cleanup logic goes here
 };
 
-Chooser.prototype.intentHandlers = {
+Ramsey.prototype.intentHandlers = {
     // register custom intent handlers
-    "ChooseName": function (intent, session, response) {
-        var names = [];
-        for (var name in intent.slots){
-            if("value" in intent.slots[name]){
-                names.push(intent.slots[name].value);
-            }
+    "GetNextRecipe": function (intent, session, response) {
+      request(process.env.uri + "/get_next_recipe", function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body)
+          dishName = body.name
+          response.ask(dishName);
+          response.tellWithCard(dishName);
         }
-        if (names.length == 0){
-            response.ask("There were no names given, ask again","Ask again")
-        }
-        var randomIndex = Math.floor(Math.random() * names.length)
-        response.tellWithCard(names[randomIndex]);
+      });
+        // var names = [];
+        // for (var name in intent.slots){
+        //     if("value" in intent.slots[name]){
+        //         names.push(intent.slots[name].value);
+        //     }
+        // }
+        // if (names.length == 0){
+        //     response.ask("There were no names given, ask again","Ask again")
+        // }
+        // var randomIndex = Math.floor(Math.random() * names.length)
+        // response.tellWithCard(names[randomIndex]);
     },
-    "ChooseNumber": function (intent, session, response) {
-        var min, max;
-        if("value" in intent.slots.Num_one && "value" in intent.slots.Num_two){
-            min = Math.min(intent.slots.Num_one.value,intent.slots.Num_two.value);
-            max = Math.max(intent.slots.Num_one.value,intent.slots.Num_two.value);
-        }else{
-            response.ask("I cant work with what you just gave me, try asking again with another range","Ask again")
+    "GetNextStep": function (intent, session, response) {
+      request(process.env.uri + "/get_next_recipe", function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body)
+          response.ask(body.name);
+          response.tellWithCard(body.name);
         }
-        //generate random number in the given range
-        var randomNum = Math.floor(Math.random()*(max-min+1))+min;
-        response.tellWithCard(randomNum.toString());
+      });
+        // var min, max;
+        // if("value" in intent.slots.Num_one && "value" in intent.slots.Num_two){
+        //     min = Math.min(intent.slots.Num_one.value,intent.slots.Num_two.value);
+        //     max = Math.max(intent.slots.Num_one.value,intent.slots.Num_two.value);
+        // }else{
+        //     response.ask("I cant work with what you just gave me, try asking again with another range","Ask again")
+        // }
+        // //generate random number in the given range
+        // var randomNum = Math.floor(Math.random()*(max-min+1))+min;
+        // response.tellWithCard(randomNum.toString());
     },
     "AMAZON.HelpIntent": function (intent, session, response) {
-        response.ask("Give me some names or a range of numbers and I will choose one at random");
+        response.ask("Ask for next steps or next recipe");
     }
 };
 
 // Create the handler that responds to the Alexa Request.
 exports.handler = function (event, context) {
-    // Create an instance of the Chooser skill.
-    var chooser = new Chooser();
-    chooser.execute(event, context);
+    // Create an instance of the Ramsey skill.
+    var ramsey = new Ramsey();
+    ramsey.execute(event, context);
 };
