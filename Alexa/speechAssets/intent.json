@@ -1,34 +1,10 @@
 {
   "intents": [
     {
-      "intent": "GetNextRecipe",
-      "slots": [
-        {
-          "name": "Name_one",
-          "type": "LIST_OF_NAMES"
-        },
-        {
-          "name": "Name_two",
-          "type": "LIST_OF_NAMES"
-        },
-        {
-          "name": "Name_three",
-          "type": "LIST_OF_NAMES"
-        }
-      ]
+      "intent": "GetNextRecipe"
     },
     {
-      "intent": "GetNextStep",
-      "slots":[
-        {
-          "name": "Min",
-          "type": "LIST_OF_NUMBERS"
-        },
-        {
-          "name": "Max",
-          "type": "LIST_OF_NUMBERS"
-        }
-      ]
+      "intent": "GetNextStep"
     },
     {
       "intent": "AMAZON.HelpIntent"
