@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, render_template, send_from_directory, abort
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
-
+import random
 from db.models import *
 
 engine = sa.create_engine(
@@ -28,7 +28,7 @@ def get_recipe():
             recipe_id_set = recipe_id_set & tmp_recipe_set
 
     if len(recipe_id_set) > 0:
-        recipe_id = recipe_id_set.pop()
+        recipe_id = random.choice(list(recipe_id_set))
         db_recipe = db_session.query(Recipe).get(recipe_id)
         db_current_recipe = CurrentRecipe()
         db_current_recipe.recipe_id = recipe_id
