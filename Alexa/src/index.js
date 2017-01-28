@@ -1,9 +1,9 @@
+'use strict';
 var request = require('request');
 /**
  * App ID for the skill
  */
 var APP_ID = process.env.app_id; //replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
-
 /**
  * The AlexaSkill prototype and helper functions
  */
@@ -41,45 +41,42 @@ Ramsey.prototype.intentHandlers = {
     "GetNextRecipe": function (intent, session, response) {
       request(process.env.uri + "/get_next_recipe", function(err, res, body){
         if (!err && res.statusCode == 200){
-          body = JSON.parse(body)
-          dishName = body.name
-          response.ask(dishName);
+          body = JSON.parse(body);
+          var dishName = body.name;
+          response.ask('would you like to make ' + dishName);
           response.tellWithCard(dishName);
         }
       });
-        // var names = [];
-        // for (var name in intent.slots){
-        //     if("value" in intent.slots[name]){
-        //         names.push(intent.slots[name].value);
-        //     }
-        // }
-        // if (names.length == 0){
-        //     response.ask("There were no names given, ask again","Ask again")
-        // }
-        // var randomIndex = Math.floor(Math.random() * names.length)
-        // response.tellWithCard(names[randomIndex]);
     },
     "GetNextStep": function (intent, session, response) {
+      request(process.env.uri + "/get_next_step", function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body);
+          response.ask(body.step);
+          response.tellWithCard(body.step);
+        }
+      });
+    },
+    "AMAZON.HelpIntent": function (intent, session, response) {
+        response.ask("Ask for next steps or next recipe");
+    },
+    "AMAZON.YesIntent": function (intent, session, response) {
       request(process.env.uri + "/get_next_recipe", function(err, res, body){
         if (!err && res.statusCode == 200){
-          body = JSON.parse(body)
+          body = JSON.parse(body);
           response.ask(body.name);
           response.tellWithCard(body.name);
         }
       });
-        // var min, max;
-        // if("value" in intent.slots.Num_one && "value" in intent.slots.Num_two){
-        //     min = Math.min(intent.slots.Num_one.value,intent.slots.Num_two.value);
-        //     max = Math.max(intent.slots.Num_one.value,intent.slots.Num_two.value);
-        // }else{
-        //     response.ask("I cant work with what you just gave me, try asking again with another range","Ask again")
-        // }
-        // //generate random number in the given range
-        // var randomNum = Math.floor(Math.random()*(max-min+1))+min;
-        // response.tellWithCard(randomNum.toString());
     },
-    "AMAZON.HelpIntent": function (intent, session, response) {
-        response.ask("Ask for next steps or next recipe");
+    "AMAZON.NoIntent": function (intent, session, response) {
+      request(process.env.uri + "/get_next_step", function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body);
+          response.ask('would you like to make ' + body.step);
+          response.tellWithCard(body.step);
+        }
+      });
     }
 };
 
