@@ -1,7 +1,7 @@
 {
   "intents": [
     {
-      "intent": "ChooseName",
+      "intent": "GetNextRecipe",
       "slots": [
         {
           "name": "Name_one",
@@ -18,7 +18,7 @@
       ]
     },
     {
-      "intent": "ChooseNumber",
+      "intent": "GetNextStep",
       "slots":[
         {
           "name": "Min",

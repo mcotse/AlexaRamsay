@@ -1,0 +1,9 @@
+GetNextRecipe give me a recipe
+GetNextRecipe get next recipe
+GetNextRecipe get recipe
+GetNextRecipe get a recipe
+
+GetNextStep what is the next step
+GetNextStep next step
+GetNextStep what is next
+GetNextStep whats next
