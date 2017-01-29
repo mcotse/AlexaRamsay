@@ -67,7 +67,7 @@ def get_recipe():
             else:
                 recipe_id_set = recipe_id_set & tmp_recipe_set
 
-        if len(recipe_id_set) > 0:
+        if recipe_id_set is not None and len(recipe_id_set) > 0:
             recipe_id = random.choice(list(recipe_id_set))
             db_recipe = db_session.query(Recipe).get(recipe_id)
             db_current_recipe = CurrentRecipe()
