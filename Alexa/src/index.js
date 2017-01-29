@@ -13,7 +13,13 @@ var handlers = {
     },
     "NextRecipeIntent": function () {
       var self = this;
-      request(url + "/recipe", function(err, res, body){
+      var userId = this.event.session.user.userId;
+      var options = {
+        uri: url + "/recipe",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
         if (!err && res.statusCode == 200){
           body = JSON.parse(body);
           var cardTitle = 'Recipe Name';
@@ -27,7 +33,13 @@ var handlers = {
     },
     "CurrentRecipeIntent": function () {
       var self = this;
-      request(url + "/current_recipe", function(err, res, body){
+      var userId = this.event.session.user.userId;
+      var options = {
+        uri: url + "/current_recipe",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
         if (!err && res.statusCode == 200){
           body = JSON.parse(body);
           var cardTitle = 'Recipe Name';
@@ -41,7 +53,13 @@ var handlers = {
     },
     "NextStepIntent": function () {
       var self = this;
-      request(url + "/step", function(err, res, body){
+      var userId = this.event.session.user.userId;
+      var options = {
+        uri: url + "/previous_step",
+        method: "GET",
+        qs: {userId}
+      };
+      request(url + "/previous_step", function(err, res, body){
         if (!err && res.statusCode == 200){
           body = JSON.parse(body);
           var cardTitle = 'Step procedure';
@@ -53,7 +71,13 @@ var handlers = {
     },
     "LastStepIntent": function () {
       var self = this;
-      request(url + "/previous_step", function(err, res, body){
+      var userId = this.event.session.user.userId;
+      var options = {
+        uri: url + "/previous_step",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
         if (!err && res.statusCode == 200){
           body = JSON.parse(body);
           var cardTitle = 'Step procedure';
@@ -65,7 +89,13 @@ var handlers = {
     },
     "StartOverStepIntent": function () {
       var self = this;
-      request(url + "/current_recipe", function(err, res, body){
+      var userId = this.event.session.user.userId;
+      var options = {
+        uri: url + "/current_recipe",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
         if (!err && res.statusCode == 200){
           body = JSON.parse(body);
           var cardTitle = 'Recipe Name';
@@ -86,6 +116,7 @@ var handlers = {
     },
     "IngredientsToRecipeIntent": function() {
       var self = this;
+      var userId = this.event.session.user.userId;
       var ingredients = this.event.request.intent.slots;
       var ingr_array = [];
       for (var key in ingredients) {
@@ -98,8 +129,10 @@ var handlers = {
       var options = {
         uri: url + "/recipe",
         method: "POST",
-        json: { "ingredients": ingr_array }
+        json: { "ingredients": ingr_array },
+        qs: {userId}
       };
+      console.log(options);
       request(options, function(err, res, body){
         if (!err && res.statusCode == 200){
           console.log(body);
