@@ -1,13 +1,40 @@
 {
   "intents": [
     {
-      "intent": "GetNextRecipe"
+      "intent": "NextRecipeIntent"
     },
     {
-      "intent": "GetNextStep"
+      "intent": "NextStepIntent"
+    },
+    {
+      "intent": "IngredientsToRecipeIntent",
+      "slots": [
+        {
+          "name": "i_one",
+          "type": "LIST_OF_INGREDIENTS"
+        },
+        {
+          "name": "i_two",
+          "type": "LIST_OF_INGREDIENTS"
+        },
+        {
+          "name": "i_three",
+          "type": "LIST_OF_INGREDIENTS"
+        },
+        {
+          "name": "i_four",
+          "type": "LIST_OF_INGREDIENTS"
+        }
+      ]
     },
     {
       "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.NoIntent"
+    },
+    {
+      "intent": "AMAZON.YesIntent"
     }
   ]
 }

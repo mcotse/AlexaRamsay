@@ -1,9 +1,34 @@
-GetNextRecipe give me a recipe
-GetNextRecipe get next recipe
-GetNextRecipe get recipe
-GetNextRecipe get a recipe
+NextRecipeIntent give me a recipe
+NextRecipeIntent get next recipe
+NextRecipeIntent get recipe
+NextRecipeIntent get a recipe
+NextRecipeIntent for a recipe
+NextRecipeIntent a recipe
+NextRecipeIntent recipe
 
-GetNextStep what is the next step
-GetNextStep next step
-GetNextStep what is next
-GetNextStep whats next
+NextStepIntent what is the next step
+NextStepIntent next step
+NextStepIntent what is next
+NextStepIntent whats next
+NextStepIntent what the next step is
+NextStepIntent for the next step
+NextStepIntent the next step
+
+IngredientsToRecipeIntent what can i make with {i_one} {i_two} {i_three} and {i_four}
+IngredientsToRecipeIntent what can i make with {i_one} {i_two} {i_three}
+IngredientsToRecipeIntent what can i make with {i_one} {i_two} and {i_three}
+IngredientsToRecipeIntent what can i make with {i_one} and {i_two}
+IngredientsToRecipeIntent what can i make with {i_one} {i_two}
+IngredientsToRecipeIntent what can i make with {i_one}
+IngredientsToRecipeIntent what i can make with {i_one} {i_two} {i_three} and {i_four}
+IngredientsToRecipeIntent what i can make with {i_one} {i_two} {i_three}
+IngredientsToRecipeIntent what i can make with {i_one} {i_two} and {i_three}
+IngredientsToRecipeIntent what i can make with {i_one} and {i_two}
+IngredientsToRecipeIntent what i can make with {i_one} {i_two}
+IngredientsToRecipeIntent what i can make with {i_one}
+IngredientsToRecipeIntent I have {i_one} {i_two} {i_three} and {i_four} what can i make
+IngredientsToRecipeIntent I have {i_one} {i_two} {i_three} what can i make
+IngredientsToRecipeIntent I have {i_one} {i_two} and {i_three} what can i make
+IngredientsToRecipeIntent I have {i_one} and {i_two} what can i make
+IngredientsToRecipeIntent I have {i_one} {i_two} what can i make
+IngredientsToRecipeIntent I have {i_one} what can i make
