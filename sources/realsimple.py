@@ -5,13 +5,18 @@ from db.models import *
 from app import Session
 
 
-def scrape(recipe_url):
+def scrape(recipe_url, img_url):
     r = urllib.urlopen(recipe_url).read()
     soup = BeautifulSoup(r, 'html.parser')
 
+    recipe_name = soup.find('h1', itemprop='name').text.strip()
+    db_recipe = db_session.query(Recipe).filter_by(name=recipe_name).first()
+    if db_recipe is not None:
+        return
     db_recipe = Recipe()
     db_recipe.source = 2
-    db_recipe.name = soup.find('h1', itemprop='name').text.strip()
+    db_recipe.name = recipe_name
+    db_recipe.img_url = img_url
 
     db_session.add(db_recipe)
     db_session.flush()
@@ -55,9 +60,17 @@ def search(query):
             break
         for link in links:
             print link.attrs['href']
-            scrape(link.attrs['href'])
+            image = link.find('img', class_='field-image-thumb').attrs['src'].strip()
+            scrape(link.attrs['href'], image)
 
 
 db_session = Session()
+search('pork')
+search('lamb')
+search('noodle')
 search('beef')
+search('vinegar')
+search('mustard')
+search('mayonnaise')
+search('chili')
 db_session.commit()

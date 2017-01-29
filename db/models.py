@@ -12,9 +12,14 @@ class Recipe(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     name = Column(String(255))
     source = Column(Integer)
+    img_url = Column(String(255))
 
     def to_dict(self):
         return dict(
+            id=self.id,
+            name=self.name,
+            source=self.source,
+            img_url=self.img_url
         )
 
 
@@ -51,9 +56,11 @@ class Instruction(Base):
 
     recipe = relationship("Recipe", backref="recipe_instructions")
 
-
     def to_dict(self):
         return dict(
+            recipe=self.recipe.to_dict(),
+            step_number=self.step_number,
+            instruction=self.text
         )
 
 
@@ -61,7 +68,11 @@ class User(Base):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    name = Column(String(45))
     email = Column(String(255))
+    doctor_id = Column(Integer, ForeignKey("doctor.id"))
+
+    doctor = relationship("Doctor", backref="patients", lazy='subquery')
 
     def to_dict(self):
         return dict(
@@ -129,6 +140,20 @@ class CurrentUserIngredients(Base):
     user_ingredient_id = Column(Integer, ForeignKey("user_ingredients.id"))
 
     user_ingredient = relationship("UserIngredients")
+
+    def to_dict(self):
+        return dict(
+        )
+
+
+class Doctor(Base):
+    __tablename__ = "doctor"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    email = Column(String(45))
+    password = Column(String(255))
+    first_name = Column(String(45))
+    last_name = Column(String(45))
 
     def to_dict(self):
         return dict(
