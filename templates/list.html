@@ -1,46 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Bootstrap Example</title>
+{% extends 'layout/admin_layout.html' %}
+{% block title %}
+    Home
+{% endblock %}
+{% block stylesheets %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/list.css">
+{% endblock %}
+{% block body %}
+<!-- <head> -->
+  <!-- <title>Bootstrap Example</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <style>
-	  	
-  	
-    /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
-    .row.content {
-    	height: 1500px;
-
-    	}
-
-    h4{
-    	font-size: 30px;
-    	text-align: center;
-    	 color: green;
-    }
-    /* Set gray background color and 100% height */
-    .sidenav {
-      background-color: #f1f1f1;
-      height: 100%;
-    }
-    
-    /* Set black background color, white text and some padding */
-    
-    /* On small screens, set height to 'auto' for sidenav and grid */
-    @media screen and (max-width: 767px) {
-      .sidenav {
-        height: auto;
-        padding: 15px;
-      }
-      .row.content {height: auto;} 
-    }
-  </style>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 </head>
-<body>
-
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Ramsay</a>
+    </div>
+  </div>
+</nav>
+<body id="bootstrap-overrides">
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav">
@@ -51,26 +33,55 @@
         <li class="active "><a href="#section1">Nelani</a></li>
         <li class="active "><a href="#section1">Jack</a></li>
       </ul><br>
-     
+
     </div>
 
     <div class="col-sm-9">
       <hr>
-      <h2>Recommended Food for Jeremy</h2>
+      <h2>Jeremy's Profile</h2>
+      <div class="well">
+      <div class="container-fluid">
+
+        <div style="float: left;">
+          <img style="width: 250px; height:180px; padding-top: 5px;" src="PHOTO.jpg"/>
+        </div>
+    <div style="margin-left: 275px;">
+      <ul class="list-group">
+        <li class="list-group-item">Age: </li>
+        <li class="list-group-item">Sex: </li>
+        <li class="list-group-item">Height: </li>
+        <li class="list-group-item">Weight: </li>
+      </ul>
+    </div>
+    </div>
+    </div>
+    <hr>
+      <h2>Add Ingredients:</h2>
       <form action="action_page.php">
        <div class="input-group">
         <input type="text" id ="inputfood" name ="food" class="form-control" placeholder="Search for food..">
-        <input type="submit" value="Submit">
+        <input style="margin-top: 10px;" type="submit" class="btn btn-success" value="Submit">
       </div>
       </form>
+      <hr>
+<h2>Ingredients List:</h2>
+      <div class="well">
+
+      <ul class="nav nav-pills nav-stacked">
+        <li class="active ">
+          <p style="color: red; float: left;">&#10006  </p>
+          <p style-"padding-left: 10px;">Carrots</p>
+        </li>
+        <li class="active ">Brown bread</li>
+      </ul>
+    </div>
       <br>
       <p></p>
       <br><br>
-    </div>
+    </>
   </div>
 </div>
-x
 
 
-</body>
-</html>
+<!-- </body>
+</html> -->
