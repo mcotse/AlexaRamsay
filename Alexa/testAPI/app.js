@@ -1,22 +1,30 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json());
 
 let exampleRecipeRes = {
-  "name": "chicken alfredo"
+  "recipe_name": "chicken alfredo"
 }
 
 let exampleStepRes = {
-  "step": "boil the pasta for six minutes"
+  "instruction": "boil the pasta for six minutes"
 }
 
 
-app.get('/get_next_recipe', function (req, res) {
+app.get('/recipe', function (req, res) {
   res.json(exampleRecipeRes)
 })
 
-app.get('/get_next_step', function (req, res) {
+app.get('/step', function (req, res) {
 
   res.json(exampleStepRes)
+})
+
+app.post('/ingr', function (req, res) {
+  console.log(req.body);
+  res.json(exampleRecipeRes);
 })
 
 app.listen(3333, function () {
