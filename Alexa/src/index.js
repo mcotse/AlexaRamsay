@@ -25,15 +25,26 @@ var handlers = {
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'would you like to make ' + body.recipe_name;
-          if ('image_url' in body){
-            var imageObj = {
-              smallImageUrl: body.image_url,
-              largeImageUrl: body.image_url
-            };
-            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
-          } else {
-            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
-          }
+          var repromptSpeech = 'would you like to make ' + body.recipe_name;
+          console.log(body);
+          // if ('img_url' in body){
+          //   if (body.img_url.indexOf('.jpg') !== -1){
+          //     var index = body.img_url.lastIndexOf(".jpg");
+          //     var img_url = body.img_url.substring(0, index + 4);
+          //     var imageObj = {
+          //       smallImageUrl: img_url,
+          //       largeImageUrl: img_url
+          //     }
+          //     console.log('1');
+          //     self.emit(':askWithCard', speechOutput, repromptSpeech, cardTitle, cardContent, imageObj);
+          //   }
+          //
+          //   // self.emit(':AskWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          // } else {
+          //   console.log('2');
+          // }
+          console.log(speechOutput, cardTitle, cardContent);
+          self.emit(':askWithCard', speechOutput, cardTitle, cardContent);
         } else {
           self.emit(':tell', 'I could not find a recipe, please try again');
         }
@@ -53,10 +64,10 @@ var handlers = {
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'the current recipe is ' + body.recipe_name;
-          if ('image_url' in body){
+          if ('img_url' in body){
             var imageObj = {
-              smallImageUrl: body.image_url,
-              largeImageUrl: body.image_url
+              smallImageUrl: body.img_url,
+              largeImageUrl: body.img_url
             };
             self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
           } else {
@@ -71,11 +82,11 @@ var handlers = {
       var self = this;
       var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
       var options = {
-        uri: url + "/previous_step",
+        uri: url + "/step",
         method: "GET",
         qs: {userId}
       };
-      request(url + "/previous_step", function(err, res, body){
+      request(options, function(err, res, body){
         if (!err && res.statusCode == 200){
           body = JSON.parse(body);
           var cardTitle = 'Step procedure';
@@ -155,10 +166,10 @@ var handlers = {
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'would you like to make ' + body.recipe_name;
-          if ('image_url' in body){
+          if ('img_url' in body){
             var imageObj = {
-              smallImageUrl: body.image_url,
-              largeImageUrl: body.image_url
+              smallImageUrl: body.img_url,
+              largeImageUrl: body.img_url
             };
             self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
           } else {
