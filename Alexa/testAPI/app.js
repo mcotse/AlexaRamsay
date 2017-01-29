@@ -5,7 +5,8 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.json());
 
 let exampleRecipeRes = {
-  "recipe_name": "chicken alfredo"
+  "recipe_name": "chicken alfredo",
+  "image_url": 'http://i.imgur.com/dtvsH31.jpg'
 }
 
 let exampleStepRes = {

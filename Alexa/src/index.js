@@ -25,7 +25,15 @@ var handlers = {
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'would you like to make ' + body.recipe_name;
-          self.emit(':askWithCard', speechOutput, cardTitle, cardContent)
+          if ('image_url' in body){
+            var imageObj = {
+              smallImageUrl: body.image_url,
+              largeImageUrl: body.image_url
+            };
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          } else {
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
+          }
         } else {
           self.emit(':tell', 'I could not find a recipe, please try again');
         }
@@ -45,7 +53,15 @@ var handlers = {
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'the current recipe is ' + body.recipe_name;
-          self.emit(':tellWithCard', speechOutput, cardTitle, cardContent)
+          if ('image_url' in body){
+            var imageObj = {
+              smallImageUrl: body.image_url,
+              largeImageUrl: body.image_url
+            };
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          } else {
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
+          }
         } else {
           self.emit(':tell', 'I could not find the current recipe, please try again');
         }
@@ -139,16 +155,20 @@ var handlers = {
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'would you like to make ' + body.recipe_name;
-          self.emit(':askWithCard', speechOutput, cardTitle, cardContent)
+          if ('image_url' in body){
+            var imageObj = {
+              smallImageUrl: body.image_url,
+              largeImageUrl: body.image_url
+            };
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          } else {
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
+          }
         } else {
           self.emit(':ask', 'I could not find a recipe, try again with different ingredients');
         }
       })
     },
-  //   { i_two: { name: 'i_two', value: 'rice' },
-  // i_one: { name: 'i_one', value: 'chicken' },
-  // i_three: { name: 'i_three' },
-  // i_four: { name: 'i_four' } }
     "AMAZON.YesIntent": function () {
       this.emit('NextStepIntent');
     },
