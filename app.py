@@ -20,7 +20,8 @@ def get_recipe():
         db_session.query(CurrentUserIngredients).delete()
 
         db_user = db_session.query(User).get(1)
-        db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id, status_id=1).limit(2).all()
+        db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id).all()
+        db_user_ingredients = random.sample(list(db_user_ingredients), 2)
         recipe_id_set = None
         for db_user_ingredient in db_user_ingredients:
             db_ingredients = db_session.query(Ingredient).filter_by(name=db_user_ingredient.name).all()
