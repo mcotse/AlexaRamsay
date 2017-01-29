@@ -89,6 +89,8 @@ def get_recipe():
         # Get recipe based on user's ingredients
         if request.method == 'GET':
             db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id).all()
+            if len(db_user_ingredients) < 2:
+                return jsonify({"error": "You do not have any ingredients. Ask your dietician to add more ingredients."}), 400
             db_user_ingredients = random.sample(list(db_user_ingredients), 2)
             # db_user_allergies = db_session.query(UserAllergies).filter_by(user_id=db_user.id).all()
             recipe_id_set = get_recipe_set(db_user_ingredients, db_session)
@@ -250,7 +252,7 @@ def add_ingredient():
     db_session.add(db_user_ingredient)
     db_session.commit()
 
-    return redirect(url_for('get_list'))
+    return redirect(url_for('get_list', user_id=user_id))
 
 
 @app.route("/remove_ingredient/<int:ingredient_id>", methods=['GET'])
@@ -259,7 +261,8 @@ def delete_ingredient(ingredient_id):
     db_user_ingredient = db_session.query(UserIngredients).get(ingredient_id)
     if not db_user_ingredient:
         return redirect(url_for('get_list'))
+    user_id = db_user_ingredient.user_id
     db_session.delete(db_user_ingredient)
     db_session.commit()
 
-    return redirect(url_for('get_list'))
+    return redirect(url_for('get_list', user_id=user_id))
