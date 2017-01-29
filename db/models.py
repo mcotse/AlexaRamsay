@@ -17,7 +17,7 @@ class Recipe(Base):
     def to_dict(self):
         return dict(
             id=self.id,
-            name=self.name,
+            recipe_name=self.name,
             source=self.source,
             img_url=self.img_url
         )
@@ -70,6 +70,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     name = Column(String(45))
     email = Column(String(255))
+    alexa_id = Column(String(255))
     doctor_id = Column(Integer, ForeignKey("doctor.id"))
 
     doctor = relationship("Doctor", backref="patients", lazy='subquery')
@@ -105,6 +106,8 @@ class CurrentRecipe(Base):
 
     def to_dict(self):
         return dict(
+            recipe_name=self.recipe.name,
+            status_id=self.status_id
         )
 
 
@@ -119,6 +122,8 @@ class CurrentInstruction(Base):
 
     def to_dict(self):
         return dict(
+            instruction=self.instruction.text,
+            status_id=self.status_id
         )
 
 
@@ -157,4 +162,9 @@ class Doctor(Base):
 
     def to_dict(self):
         return dict(
+            id=self.id,
+            email=self.email,
+            password=self.password,
+            first_name=self.first_name,
+            last_name=self.last_name
         )

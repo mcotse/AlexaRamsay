@@ -16,6 +16,7 @@ def clean_ingredients_noun():
         nouns = list(x[0] for x in list(filter((lambda x: 'NN' in x[1]), tags)))
         db_ingredient.name = ' '.join(nouns)
         db_session.add(db_ingredient)
+    db_session.commit()
 
 
 def clean_ingredients_prefix():
@@ -24,8 +25,6 @@ def clean_ingredients_prefix():
 
     for db_ingredient in db_ingredients:
         print db_ingredient.id
-        if 's ' in db_ingredient.name and db_ingredient.name.index("s ") == 0:
-            db_ingredient.name = db_ingredient.name[2:]
         for p in prefixes:
             if "{}s".format(p) in db_ingredient.name:
                 db_ingredient.name = db_ingredient.name.replace("{}s".format(p), "").strip()
@@ -33,6 +32,7 @@ def clean_ingredients_prefix():
             elif p in db_ingredient.name:
                 db_ingredient.name = db_ingredient.name.replace(p, "").strip()
                 break
+    db_session.commit()
 
 
 def clean_instructions():

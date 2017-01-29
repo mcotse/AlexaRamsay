@@ -29,15 +29,11 @@ def user(user_id):
     if 'doctor_id' not in session:
         return redirect(url_for('login'))
     doctor_id = session['doctor_id']
-
     db_session = Session()
     db_doctor = db_session.query(Doctor).get(doctor_id)
-
     db_user = db_session.query(User).get(user_id)
-
     if not db_user:
         return redirect(url_for('index'))
-
     return render_template('user.html', user=db_user, doctor=db_doctor)
 
 
@@ -135,9 +131,7 @@ def get_recipe():
                 db_session.add(db_current_instruction)
 
             db_session.commit()
-            response = db_recipe.to_dict()
-            db_session.close()
-            return jsonify(response)
+            return jsonify(db_recipe.to_dict())
         else:
             db_session.close()
             return jsonify({"error": "Could not find a valid recipe"}), 400
@@ -153,19 +147,13 @@ def get_step():
 
     if db_current_instruction is None:
         db_current_recipe.status_id = 3
-
-        db_current_user_ingredients = db_session.query(CurrentUserIngredients).all()
-        for db_current_user_ingredient in db_current_user_ingredients:
-            db_current_user_ingredient.user_ingredient.status_id = 3
-            db_session.add(db_current_user_ingredient.user_ingredient)
-
         db_session.commit()
         return jsonify({"instruction": "You are done."})
 
     db_current_recipe.status_id = 2
     db_current_instruction.status_id = 3
     db_session.commit()
-    return jsonify({"instruction": db_current_instruction.instruction.text})
+    return jsonify(db_current_instruction.to_dict())
 
 
 @app.route("/first_step", methods=['GET'])
@@ -180,7 +168,7 @@ def get_first_step():
     db_session.commit()
 
     db_current_instruction = db_session.query(CurrentInstruction).filter_by(status_id=1).first()
-    return jsonify({"instruction": db_current_instruction.instruction.text})
+    return jsonify(db_current_instruction.to_dict())
 
 
 @app.route("/previous_step", methods=['GET'])
@@ -197,7 +185,7 @@ def get_previous_step():
     db_session.add(db_current_instruction)
     db_session.commit()
 
-    return jsonify({"instruction": db_current_instruction.instruction.text})
+    return jsonify(db_current_instruction.to_dict())
 
 
 @app.route("/current_recipe", methods=['GET'])
@@ -206,4 +194,4 @@ def get_current_recipe():
 
     db_current_recipe = db_session.query(CurrentRecipe).first()
 
-    return jsonify({"recipe_name": db_current_recipe.recipe.name})
+    return jsonify(db_current_recipe.to_dict())
