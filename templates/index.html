@@ -11,7 +11,7 @@
             <div class="col-md-4 col-sm-4 mb">
                 <div class="white-panel pn" style="min-height: 300px; height: auto; padding-bottom: 20px;">
                     <div class="white-header">
-                        <h5>{{ user.name }} / {{ user.email }}</h5>
+                        <h5>{{ user.first_name }} {{ user.last_name }} / {{ user.email }}</h5>
                     </div>
                     {% for ingredient in user.user_ingredients %}
                         {{ ingredient.name }}<br/>

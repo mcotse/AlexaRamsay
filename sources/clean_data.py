@@ -56,11 +56,11 @@ def clean_empty_instructions():
 
     for db_instruction in db_instructions:
         print db_instruction.id
-        if db_instruction.text == "":
+        if db_instruction.text == "" or db_instruction.text == ".":
             db_session.delete(db_instruction)
 
 
 db_session = Session()
-clean_ingredients()
+clean_empty_instructions()
 print "Committing"
 db_session.commit()
