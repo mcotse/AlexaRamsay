@@ -5,7 +5,7 @@ var handlers = {
 
     "LaunchRequest": function () {
       var speechOutput = "Welcome to Ramsay. I can guide you through recipes based on your dietitians perscription";
-      this.emit(':tell',speechOutput);
+      this.emit(':ask',speechOutput);
     },
     'Unhandled': function() {
       this.emit(':ask', 'Nooooooo we have a problem');
@@ -19,6 +19,8 @@ var handlers = {
           var cardContent = body.recipe_name;
           var speechOutput = 'would you like to make ' + body.recipe_name;
           self.emit(':askWithCard', speechOutput, cardTitle, cardContent)
+        } else {
+          self.emit(':ask', 'I could not find a recipe, would you like to try again');
         }
       });
     },
@@ -50,15 +52,15 @@ var handlers = {
         method: "POST",
         json: { "ingredients": ingr_array }
       };
-      // console.log(options);
       request(options, function(err, res, body){
         if (!err && res.statusCode == 200){
-          // body = JSON.parse(body);
           console.log(body);
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'would you like to make ' + body.recipe_name;
           self.emit(':askWithCard', speechOutput, cardTitle, cardContent)
+        } else {
+          self.emit(':ask', 'I could not find a recipe, try again with different ingredients');
         }
       })
     },
