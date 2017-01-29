@@ -33,7 +33,7 @@ class Ingredient(Base):
     __tablename__ = "ingredient"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = Column(TEXT)
+    name = Column(String(255))
     recipe_id = Column(Integer)
 
     def to_dict(self):
@@ -74,6 +74,7 @@ class UserIngredients(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"))
     name = Column(String(255))
+    status_id = Column(Integer)
 
     user = relationship("User", backref="user_ingredients")
 
@@ -113,6 +114,19 @@ class Status(Base):
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     name = Column(String(45))
+
+    def to_dict(self):
+        return dict(
+        )
+
+
+class CurrentUserIngredients(Base):
+    __tablename__ = "current_user_ingredients"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_ingredient_id = Column(Integer, ForeignKey("user_ingredients.id"))
+
+    user_ingredient = relationship("UserIngredients")
 
     def to_dict(self):
         return dict(
