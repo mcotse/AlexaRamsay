@@ -32,3 +32,9 @@ IngredientsToRecipeIntent I have {i_one} {i_two} and {i_three} what can i make
 IngredientsToRecipeIntent I have {i_one} and {i_two} what can i make
 IngredientsToRecipeIntent I have {i_one} {i_two} what can i make
 IngredientsToRecipeIntent I have {i_one} what can i make
+IngredientsToRecipeIntent what about {i_one} {i_two} {i_three} and {i_four}
+IngredientsToRecipeIntent what about {i_one} {i_two} {i_three}
+IngredientsToRecipeIntent what about {i_one} {i_two} and {i_three}
+IngredientsToRecipeIntent what about {i_one} and {i_two}
+IngredientsToRecipeIntent what about {i_one} {i_two}
+IngredientsToRecipeIntent what about {i_one}
