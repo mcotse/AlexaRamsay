@@ -11,7 +11,7 @@ def clean_ingredients():
     prefixes = ['teaspoon', 'tablespoon', 'cup', 'ounce', 'slice']
     for db_ingredient in db_ingredients:
         print db_ingredient.id
-        if db_ingredients.name == '':
+        if db_ingredient.name == '':
             db_session.delete(db_ingredient)
         else:
             tokens = nltk.word_tokenize(db_ingredient.name.strip())
