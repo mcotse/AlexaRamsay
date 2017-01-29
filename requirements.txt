@@ -2,3 +2,5 @@ sqlalchemy
 flask
 beautifulsoup4
 nltk
+uwsgi
+mysql-python
