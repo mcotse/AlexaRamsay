@@ -21,7 +21,6 @@ def index():
 
     db_session = Session()
     db_doctor = db_session.query(Doctor).get(doctor_id)
-
     return render_template('index.html', doctor=db_doctor)
 
 
@@ -69,9 +68,12 @@ def get_recipe():
     db_session.query(CurrentRecipe).delete()
     db_session.query(CurrentInstruction).delete()
     db_session.query(CurrentUserIngredients).delete()
-    if request.method == 'GET':
+    alexa_id = request.args.get('userId')
+    db_user = db_session.query(User).filter_by(alexa_id=alexa_id).first()
+    if not db_user:
+        return jsonify({"error": "Unable to find user"}), 404
 
-        db_user = db_session.query(User).get(1)
+    if request.method == 'GET':
         db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id).all()
         db_user_ingredients = random.sample(list(db_user_ingredients), 3)
         recipe_id_set = None
@@ -102,9 +104,7 @@ def get_recipe():
                 db_session.add(db_current_instruction)
 
             db_session.commit()
-            response = {"recipe_name": db_recipe.name}
-            db_session.close()
-            return jsonify(response)
+            return jsonify(db_recipe.to_dict())
         else:
             db_session.close()
             return jsonify({"error": "Could not find a valid recipe"}), 400
@@ -135,7 +135,7 @@ def get_recipe():
                 db_session.add(db_current_instruction)
 
             db_session.commit()
-            response = {"recipe_name": db_recipe.name}
+            response = db_recipe.to_dict()
             db_session.close()
             return jsonify(response)
         else:
