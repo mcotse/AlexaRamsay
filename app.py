@@ -114,3 +114,44 @@ def get_step():
     db_current_instruction.status_id = 3
     db_session.commit()
     return jsonify({"instruction": db_current_instruction.instruction.text})
+
+
+@app.route("/first_step", methods=['GET'])
+def get_first_step():
+    db_session = Session()
+
+    db_current_instructions = db_session.query(CurrentInstruction).all()
+
+    for db_current_instruction in db_current_instructions:
+        db_current_instruction.status_id = 1
+        db_session.add(db_current_instruction)
+    db_session.commit()
+
+    db_current_instruction = db_session.query(CurrentInstruction).filter_by(status_id=1).first()
+    return jsonify({"instruction": db_current_instruction.instruction.text})
+
+
+@app.route("/previous_step", methods=['GET'])
+def get_previous_step():
+    db_session = Session()
+
+    db_current_instruction = db_session.query(CurrentInstruction).filter_by(status_id=3).order_by(
+        CurrentInstruction.id.desc()).first()
+
+    if db_current_instruction is None:
+        db_current_instruction = db_session.query(CurrentInstruction).filter_by(status_id=1).first()
+
+    db_current_instruction.status_id = 3
+    db_session.add(db_current_instruction)
+    db_session.commit()
+
+    return jsonify({"instruction": db_current_instruction.instruction.text})
+
+
+@app.route("/current_recipe", methods=['GET'])
+def get_current_recipe():
+    db_session = Session()
+
+    db_current_recipe = db_session.query(CurrentRecipe).first()
+
+    return jsonify({"recipe_name": db_current_recipe.recipe.name})

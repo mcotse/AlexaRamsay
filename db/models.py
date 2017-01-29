@@ -87,8 +87,10 @@ class CurrentRecipe(Base):
     __tablename__ = "current_recipe"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    recipe_id = Column(Integer)
+    recipe_id = Column(Integer, ForeignKey("recipe.id"))
     status_id = Column(Integer)
+
+    recipe = relationship("Recipe")
 
     def to_dict(self):
         return dict(
