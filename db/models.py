@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, DECIMAL, Boolean, TEXT, TIMESTAMP
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, DECIMAL, Boolean, TEXT, TIMESTAMP, CHAR
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
@@ -19,7 +19,8 @@ class Recipe(Base):
             id=self.id,
             recipe_name=self.name,
             source=self.source,
-            img_url=self.img_url
+            img_url=self.img_url,
+            ingredients=list(x.to_dict() for x in self.ingredients)
         )
 
 
@@ -39,10 +40,15 @@ class Ingredient(Base):
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     name = Column(String(255))
-    recipe_id = Column(Integer)
+    recipe_id = Column(Integer, ForeignKey("recipe.id"))
+
+    recipe = relationship("Recipe", backref="ingredients")
 
     def to_dict(self):
         return dict(
+            id=self.id,
+            name=self.name,
+            recipe_id=self.recipe_id
         )
 
 
@@ -68,9 +74,16 @@ class User(Base):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = Column(String(45))
+    first_name = Column(String(45))
+    last_name = Column(String(45))
     email = Column(String(255))
     alexa_id = Column(String(255))
+    height = Column(Integer)
+    weight = Column(Integer)
+    age = Column(Integer)
+    gender = Column(CHAR)
+    img_url = Column(String(255))
+    
     doctor_id = Column(Integer, ForeignKey("doctor.id"))
 
     doctor = relationship("Doctor", backref="patients", lazy='subquery')
@@ -85,9 +98,23 @@ class UserIngredients(Base):
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"))
-    name = Column(String(255))
+    name = Column(String(45))
 
     user = relationship("User", backref="user_ingredients")
+
+    def to_dict(self):
+        return dict(
+        )
+
+
+class UserAllergies(Base):
+    __tablename__ = "user_allergies"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    name = Column(String(45))
+
+    user = relationship("User", backref="user_allergies")
 
     def to_dict(self):
         return dict(
