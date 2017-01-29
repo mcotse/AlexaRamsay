@@ -20,7 +20,7 @@ def scrape(recipe_url):
     for ingredient in ingredients:
         name = ingredient.contents[3].text.strip() + " " + ingredient.contents[5].text.strip()
         db_ingredient = Ingredient()
-        db_ingredient.name = name
+        db_ingredient.name = name.strip()
         db_ingredient.recipe_id = db_recipe.id
 
         db_session.add(db_ingredient)
@@ -56,4 +56,10 @@ search('chicken')
 search('apple')
 search('corn')
 search('avocado')
+search('egg')
+search('onion')
+search('garlic')
+search('rice')
+search('cilantro')
+search('sugar')
 db_session.commit()
