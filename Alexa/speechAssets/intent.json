@@ -7,6 +7,15 @@
       "intent": "NextStepIntent"
     },
     {
+      "intent": "CurrentRecipeIntent"
+    },
+    {
+      "intent": "LastStepIntent"
+    },
+    {
+      "intent": "StartOverStepIntent"
+    },
+    {
       "intent": "IngredientsToRecipeIntent",
       "slots": [
         {

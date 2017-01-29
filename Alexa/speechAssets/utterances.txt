@@ -14,6 +14,30 @@ NextStepIntent what the next step is
 NextStepIntent for the next step
 NextStepIntent the next step
 
+StartOverStepIntent startover
+StartOverStepIntent to startover
+StartOverStepIntent to startover with the recipe
+StartOverStepIntent to startover with the current recipe
+StartOverStepIntent to go back to the first step
+
+LastStepIntent go back
+LastStepIntent go back one step
+LastStepIntent to go back one step
+LastStepIntent last step
+LastStepIntent what was the last step
+LastStepIntent what the last step was
+LastStepIntent what the last step is
+LastStepIntent what that last step was
+LastStepIntent what that last step is
+LastStepIntent what did you just say
+LastStepIntent what did you say
+
+CurrentRecipeIntent what is the current recipe
+CurrentRecipeIntent what is this recipe
+CurrentRecipeIntent what is the recipe
+CurrentRecipeIntent what the recipe is
+CurrentRecipeIntent what the current recipe is
+
 IngredientsToRecipeIntent what can i make with {i_one} {i_two} {i_three} and {i_four}
 IngredientsToRecipeIntent what can i make with {i_one} {i_two} {i_three}
 IngredientsToRecipeIntent what can i make with {i_one} {i_two} and {i_three}
