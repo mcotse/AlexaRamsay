@@ -86,7 +86,6 @@ class UserIngredients(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"))
     name = Column(String(255))
-    status_id = Column(Integer)
 
     user = relationship("User", backref="user_ingredients")
 
