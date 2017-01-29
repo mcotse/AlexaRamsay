@@ -1,14 +1,66 @@
-from flask import Flask, jsonify, request, render_template, send_from_directory, abort
+from flask import Flask, jsonify, request, render_template, send_from_directory, abort, redirect, url_for, session
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 import random
 from db.models import *
+import bcrypt
 
 engine = sa.create_engine(
     'mysql+mysqldb://ramsay:ramsay123@ramsay.cn8pndyiytrv.us-east-1.rds.amazonaws.com:3306/Ramsay?charset=utf8')
 Session = sessionmaker(bind=engine, autoflush=True)
 
 app = Flask(__name__)
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+
+@app.route('/')
+def index():
+    if 'doctor_id' not in session:
+        return redirect(url_for('login'))
+    doctor_id = session['doctor_id']
+
+    db_session = Session()
+    db_doctor = db_session.query(Doctor).get(doctor_id)
+
+    return render_template('index.html', doctor=db_doctor)
+
+
+@app.route('/user/<int:user_id>')
+def user(user_id):
+    if 'doctor_id' not in session:
+        return redirect(url_for('login'))
+    doctor_id = session['doctor_id']
+
+    db_session = Session()
+    db_doctor = db_session.query(Doctor).get(doctor_id)
+
+    db_user = db_session.query(User).get(user_id)
+
+    if not db_user:
+        return redirect(url_for('index'))
+
+    return render_template('user.html', user=db_user, doctor=db_doctor)
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template("login.html")
+    elif request.method == 'POST':
+        db_session = Session()
+        email = request.form['email']
+
+        db_doctor = db_session.query(Doctor).filter_by(email=email).first()
+
+        if db_doctor is None:
+            return redirect(url_for('login'))
+
+        password = request.form['password'].encode('utf-8')
+
+        if not bcrypt.hashpw(password, db_doctor.password.encode('utf-8')) == db_doctor.password:
+            return redirect(url_for('login'))
+        session['doctor_id'] = db_doctor.id
+        return redirect(url_for('index'))
 
 
 @app.route("/recipe", methods=['GET', 'POST'])

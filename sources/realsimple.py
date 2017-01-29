@@ -59,5 +59,7 @@ def search(query):
 
 
 db_session = Session()
-search('beef')
+search('pork')
+search('lamb')
+search('noodle')
 db_session.commit()
