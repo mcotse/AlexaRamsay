@@ -166,15 +166,15 @@ var handlers = {
           var cardTitle = 'Recipe Name';
           var cardContent = body.recipe_name;
           var speechOutput = 'would you like to make ' + body.recipe_name;
-          if ('img_url' in body){
-            var imageObj = {
-              smallImageUrl: body.img_url,
-              largeImageUrl: body.img_url
-            };
-            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
-          } else {
-            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
-          }
+          // if ('img_url' in body){
+          //   var imageObj = {
+          //     smallImageUrl: body.img_url,
+          //     largeImageUrl: body.img_url
+          //   };
+          //   self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          // } else {
+          // }
+            self.emit(':askWithCard', speechOutput, cardTitle, cardContent);
         } else {
           self.emit(':ask', 'I could not find a recipe, try again with different ingredients');
         }
