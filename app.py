@@ -10,7 +10,7 @@ engine = sa.create_engine(
 Session = sessionmaker(bind=engine, autoflush=True)
 
 app = Flask(__name__)
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.secret_key = 'alexaramsay123'
 
 
 @app.route('/')
@@ -58,83 +58,101 @@ def login():
         return redirect(url_for('index'))
 
 
+def get_recipe_set(db_user_ingredients, db_session):
+    recipe_id_set = None
+    for db_user_ingredient in db_user_ingredients:
+        db_ingredients = db_session.query(Ingredient).filter(
+            Ingredient.name.like("%{}%".format(db_user_ingredient.name))).all()
+        tmp_recipe_set = set(x.recipe_id for x in db_ingredients)
+        if recipe_id_set is None:
+            recipe_id_set = tmp_recipe_set
+        else:
+            recipe_id_set = recipe_id_set & tmp_recipe_set
+
+    return recipe_id_set
+
+
 @app.route("/recipe", methods=['GET', 'POST'])
 def get_recipe():
     db_session = Session()
-    db_session.query(CurrentRecipe).delete()
-    db_session.query(CurrentInstruction).delete()
-    db_session.query(CurrentUserIngredients).delete()
-    alexa_id = request.args.get('userId')
-    db_user = db_session.query(User).filter_by(alexa_id=alexa_id).first()
-    if not db_user:
-        return jsonify({"error": "Unable to find user"}), 404
+    try:
+        alexa_id = request.args.get('userId')
+        if not alexa_id:
+            return jsonify({"error": "Invalid Alexa ID"}), 404
+        db_user = db_session.query(User).filter_by(alexa_id=alexa_id).first()
+        if not db_user:
+            return jsonify({"error": "Unable to find user"}), 404
+        db_session.query(CurrentRecipe).delete()
+        db_session.query(CurrentInstruction).delete()
+        db_session.query(CurrentUserIngredients).delete()
+        if request.method == 'GET':
+            db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id).all()
+            db_user_ingredients = random.sample(list(db_user_ingredients), 2)
+            # db_user_allergies = db_session.query(UserAllergies).filter_by(user_id=db_user.id).all()
+            recipe_id_set = get_recipe_set(db_user_ingredients, db_session)
 
-    if request.method == 'GET':
-        db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id).all()
-        db_user_ingredients = random.sample(list(db_user_ingredients), 3)
-        recipe_id_set = None
-        for db_user_ingredient in db_user_ingredients:
-            db_ingredients = db_session.query(Ingredient).filter_by(name=db_user_ingredient.name).all()
-            tmp_recipe_set = set(x.recipe_id for x in db_ingredients)
-            if recipe_id_set is None:
-                recipe_id_set = tmp_recipe_set
+            # for recipe_id in list(recipe_id_set):
+            #     db_recipe = db_session.query(Recipe).get(recipe_id)
+            #     for db_ingredient in db_recipe.ingredients:
+            #         for db_user_allergy in db_user_allergies:
+            #             if db_ingredient.name == db_user_allergy.name:
+            #                 recipe_id_set.discard(recipe_id)
+
+            if recipe_id_set is not None and len(recipe_id_set) > 0:
+                recipe_id = random.choice(list(recipe_id_set))
+                db_recipe = db_session.query(Recipe).get(recipe_id)
+                db_current_recipe = CurrentRecipe()
+                db_current_recipe.recipe_id = recipe_id
+                db_current_recipe.status_id = 1
+                db_session.add(db_current_recipe)
+
+                for recipe_instruction in db_recipe.recipe_instructions:
+                    db_current_instruction = CurrentInstruction()
+                    db_current_instruction.instruction_id = recipe_instruction.id
+                    db_current_instruction.status_id = 1
+                    db_session.add(db_current_instruction)
+
+                db_session.commit()
+                return jsonify(db_recipe.to_dict())
             else:
-                recipe_id_set = recipe_id_set & tmp_recipe_set
+                db_session.close()
+                return jsonify({"error": "Could not find a valid recipe"}), 400
+        elif request.method == 'POST':
+            ingredient_list = request.json['ingredients']
 
-            db_current_user_ingredient = CurrentUserIngredients()
-            db_current_user_ingredient.user_ingredient_id = db_user_ingredient.id
-            db_session.add(db_current_user_ingredient)
+            recipe_id_set = None
+            for ingredient_name in ingredient_list:
+                db_ingredients = db_session.query(Ingredient).filter(
+                    Ingredient.name.like("%{}%".format(ingredient_name))).all()
+                tmp_recipe_set = set(x.recipe_id for x in db_ingredients)
+                if recipe_id_set is None:
+                    recipe_id_set = tmp_recipe_set
+                else:
+                    recipe_id_set = recipe_id_set & tmp_recipe_set
 
-        if recipe_id_set is not None and len(recipe_id_set) > 0:
-            recipe_id = random.choice(list(recipe_id_set))
-            db_recipe = db_session.query(Recipe).get(recipe_id)
-            db_current_recipe = CurrentRecipe()
-            db_current_recipe.recipe_id = recipe_id
-            db_current_recipe.status_id = 1
-            db_session.add(db_current_recipe)
+            if recipe_id_set is not None and len(recipe_id_set) > 0:
+                recipe_id = random.choice(list(recipe_id_set))
+                db_recipe = db_session.query(Recipe).get(recipe_id)
+                db_current_recipe = CurrentRecipe()
+                db_current_recipe.recipe_id = recipe_id
+                db_current_recipe.status_id = 1
+                db_session.add(db_current_recipe)
 
-            for recipe_instruction in db_recipe.recipe_instructions:
-                db_current_instruction = CurrentInstruction()
-                db_current_instruction.instruction_id = recipe_instruction.id
-                db_current_instruction.status_id = 1
-                db_session.add(db_current_instruction)
+                for recipe_instruction in db_recipe.recipe_instructions:
+                    db_current_instruction = CurrentInstruction()
+                    db_current_instruction.instruction_id = recipe_instruction.id
+                    db_current_instruction.status_id = 1
+                    db_session.add(db_current_instruction)
 
-            db_session.commit()
-            return jsonify(db_recipe.to_dict())
-        else:
-            db_session.close()
-            return jsonify({"error": "Could not find a valid recipe"}), 400
-    elif request.method == 'POST':
-        ingredient_list = request.json['ingredients']
-
-        recipe_id_set = None
-        for ingredient_name in ingredient_list:
-            db_ingredients = db_session.query(Ingredient).filter_by(name=ingredient_name).all()
-            tmp_recipe_set = set(x.recipe_id for x in db_ingredients)
-            if recipe_id_set is None:
-                recipe_id_set = tmp_recipe_set
+                db_session.commit()
+                return jsonify(db_recipe.to_dict())
             else:
-                recipe_id_set = recipe_id_set & tmp_recipe_set
-
-        if recipe_id_set is not None and len(recipe_id_set) > 0:
-            recipe_id = random.choice(list(recipe_id_set))
-            db_recipe = db_session.query(Recipe).get(recipe_id)
-            db_current_recipe = CurrentRecipe()
-            db_current_recipe.recipe_id = recipe_id
-            db_current_recipe.status_id = 1
-            db_session.add(db_current_recipe)
-
-            for recipe_instruction in db_recipe.recipe_instructions:
-                db_current_instruction = CurrentInstruction()
-                db_current_instruction.instruction_id = recipe_instruction.id
-                db_current_instruction.status_id = 1
-                db_session.add(db_current_instruction)
-
-            db_session.commit()
-            return jsonify(db_recipe.to_dict())
-        else:
-            db_session.close()
-            return jsonify({"error": "Could not find a valid recipe"}), 400
+                db_session.close()
+                return jsonify({"error": "Could not find a valid recipe"}), 400
+    except Exception as e:
+        print e
+    finally:
+        db_session.close()
 
 
 @app.route("/step", methods=['GET'])

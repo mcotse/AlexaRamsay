@@ -6,32 +6,26 @@ from app import Session
 import nltk
 
 
-def clean_ingredients_noun():
+def clean_ingredients():
     db_ingredients = db_session.query(Ingredient).all()
-
-    for db_ingredient in db_ingredients:
-        print db_ingredient.id
-        tokens = nltk.word_tokenize(db_ingredient.name.strip())
-        tags = nltk.pos_tag(tokens)
-        nouns = list(x[0] for x in list(filter((lambda x: 'NN' in x[1]), tags)))
-        db_ingredient.name = ' '.join(nouns)
-        db_session.add(db_ingredient)
-    db_session.commit()
-
-
-def clean_ingredients_prefix():
     prefixes = ['teaspoon', 'tablespoon', 'cup', 'ounce', 'slice']
-    db_ingredients = db_session.query(Ingredient).all()
-
     for db_ingredient in db_ingredients:
         print db_ingredient.id
-        for p in prefixes:
-            if "{}s".format(p) in db_ingredient.name:
-                db_ingredient.name = db_ingredient.name.replace("{}s".format(p), "").strip()
-                break
-            elif p in db_ingredient.name:
-                db_ingredient.name = db_ingredient.name.replace(p, "").strip()
-                break
+        if db_ingredient.name == '':
+            db_session.delete(db_ingredient)
+        else:
+            tokens = nltk.word_tokenize(db_ingredient.name.strip())
+            tags = nltk.pos_tag(tokens)
+            nouns = list(x[0] for x in list(filter((lambda x: 'NN' in x[1]), tags)))
+            db_ingredient.name = ' '.join(nouns)
+            for p in prefixes:
+                if "{}s".format(p) in db_ingredient.name:
+                    db_ingredient.name = db_ingredient.name.replace("{}s".format(p), "").strip()
+                    break
+                elif p in db_ingredient.name:
+                    db_ingredient.name = db_ingredient.name.replace(p, "").strip()
+                    break
+            db_session.add(db_ingredient)
     db_session.commit()
 
 
@@ -67,6 +61,6 @@ def clean_empty_instructions():
 
 
 db_session = Session()
-clean_empty_instructions()
+clean_ingredients()
 print "Committing"
 db_session.commit()
