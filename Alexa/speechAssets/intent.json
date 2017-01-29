@@ -1,37 +1,49 @@
 {
   "intents": [
     {
-      "intent": "ChooseName",
-      "slots": [
-        {
-          "name": "Name_one",
-          "type": "LIST_OF_NAMES"
-        },
-        {
-          "name": "Name_two",
-          "type": "LIST_OF_NAMES"
-        },
-        {
-          "name": "Name_three",
-          "type": "LIST_OF_NAMES"
-        }
-      ]
+      "intent": "NextRecipeIntent"
     },
     {
-      "intent": "ChooseNumber",
-      "slots":[
+      "intent": "NextStepIntent"
+    },
+    {
+      "intent": "CurrentRecipeIntent"
+    },
+    {
+      "intent": "LastStepIntent"
+    },
+    {
+      "intent": "StartOverStepIntent"
+    },
+    {
+      "intent": "IngredientsToRecipeIntent",
+      "slots": [
         {
-          "name": "Min",
-          "type": "LIST_OF_NUMBERS"
+          "name": "i_one",
+          "type": "LIST_OF_INGREDIENTS"
         },
         {
-          "name": "Max",
-          "type": "LIST_OF_NUMBERS"
+          "name": "i_two",
+          "type": "LIST_OF_INGREDIENTS"
+        },
+        {
+          "name": "i_three",
+          "type": "LIST_OF_INGREDIENTS"
+        },
+        {
+          "name": "i_four",
+          "type": "LIST_OF_INGREDIENTS"
         }
       ]
     },
     {
       "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.NoIntent"
+    },
+    {
+      "intent": "AMAZON.YesIntent"
     }
   ]
 }

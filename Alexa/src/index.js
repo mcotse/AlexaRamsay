@@ -1,76 +1,185 @@
+var Alexa = require('alexa-sdk');
+var request = require('request');
 
-/**
- * App ID for the skill
- */
-var APP_ID = app_id; //replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
+var url = process.env.uri;
+var handlers = {
 
-/**
- * The AlexaSkill prototype and helper functions
- */
-var AlexaSkill = require('./AlexaSkill');
-
-var Chooser = function () {
-    AlexaSkill.call(this, APP_ID);
-};
-
-// Extend AlexaSkill
-Chooser.prototype = Object.create(AlexaSkill.prototype);
-Chooser.prototype.constructor = Chooser;
-
-Chooser.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
-    console.log("Chooser onSessionStarted requestId: " + sessionStartedRequest.requestId
-        + ", sessionId: " + session.sessionId);
-    // any initialization logic goes here
-};
-
-Chooser.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
-    console.log("Chooser onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-    var speechOutput = "Welcome to Randomizer, Give me a few names to choose from and i will choose one at random";
-    var repromptText = "Give me some names";
-    response.ask(speechOutput, repromptText);
-};
-
-Chooser.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
-    console.log("Chooser onSessionEnded requestId: " + sessionEndedRequest.requestId
-        + ", sessionId: " + session.sessionId);
-    // any cleanup logic goes here
-};
-
-Chooser.prototype.intentHandlers = {
-    // register custom intent handlers
-    "ChooseName": function (intent, session, response) {
-        var names = [];
-        for (var name in intent.slots){
-            if("value" in intent.slots[name]){
-                names.push(intent.slots[name].value);
+    "LaunchRequest": function () {
+      var speechOutput = "Welcome to Ramsay. I can guide you through recipes based on your dietitians perscription";
+      this.emit(':ask',speechOutput);
+    },
+    'Unhandled': function() {
+      this.emit(':ask', 'Nooooooo we have a problem');
+    },
+    "NextRecipeIntent": function () {
+      var self = this;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
+      var options = {
+        uri: url + "/recipe",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body);
+          var cardTitle = 'Recipe Name';
+          var cardContent = body.recipe_name;
+          var speechOutput = 'would you like to make ' + body.recipe_name;
+          if ('image_url' in body){
+            var imageObj = {
+              smallImageUrl: body.image_url,
+              largeImageUrl: body.image_url
+            };
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          } else {
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
+          }
+        } else {
+          self.emit(':tell', 'I could not find a recipe, please try again');
+        }
+      });
+    },
+    "CurrentRecipeIntent": function () {
+      var self = this;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
+      var options = {
+        uri: url + "/current_recipe",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body);
+          var cardTitle = 'Recipe Name';
+          var cardContent = body.recipe_name;
+          var speechOutput = 'the current recipe is ' + body.recipe_name;
+          if ('image_url' in body){
+            var imageObj = {
+              smallImageUrl: body.image_url,
+              largeImageUrl: body.image_url
+            };
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          } else {
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
+          }
+        } else {
+          self.emit(':tell', 'I could not find the current recipe, please try again');
+        }
+      });
+    },
+    "NextStepIntent": function () {
+      var self = this;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
+      var options = {
+        uri: url + "/previous_step",
+        method: "GET",
+        qs: {userId}
+      };
+      request(url + "/previous_step", function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body);
+          var cardTitle = 'Step procedure';
+          var cardContent = body.instruction;
+          var speechOutput = body.instruction;
+          self.emit(':tellWithCard', speechOutput, cardTitle, cardContent)
+        }
+      });
+    },
+    "LastStepIntent": function () {
+      var self = this;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
+      var options = {
+        uri: url + "/previous_step",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body);
+          var cardTitle = 'Step procedure';
+          var cardContent = body.instruction;
+          var speechOutput = body.instruction;
+          self.emit(':tellWithCard', speechOutput, cardTitle, cardContent)
+        }
+      });
+    },
+    "StartOverStepIntent": function () {
+      var self = this;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
+      var options = {
+        uri: url + "/current_recipe",
+        method: "GET",
+        qs: {userId}
+      };
+      request(options, function(err, res, body){
+        if (!err && res.statusCode == 200){
+          body = JSON.parse(body);
+          var cardTitle = 'Recipe Name';
+          var recipeName = body.recipe_name;
+          request(url + "/first_step", function(err, res, body){
+            if (!err && res.statusCode == 200){
+              console.log('hi');
+              body = JSON.parse(body);
+              var cardContent = body.instruction;
+              var speechOutput = 'starting over with the recipe ' + recipeName + '. ' +  body.instruction;
+              self.emit(':tellWithCard', speechOutput, cardTitle, cardContent)
             }
+          });
+        } else {
+          self.emit(':tell', 'I could not find the current recipe, please try again');
         }
-        if (names.length == 0){
-            response.ask("There were no names given, ask again","Ask again")
-        }
-        var randomIndex = Math.floor(Math.random() * names.length)
-        response.tellWithCard(names[randomIndex]);
+      });
     },
-    "ChooseNumber": function (intent, session, response) {
-        var min, max;
-        if("value" in intent.slots.Num_one && "value" in intent.slots.Num_two){
-            min = Math.min(intent.slots.Num_one.value,intent.slots.Num_two.value);
-            max = Math.max(intent.slots.Num_one.value,intent.slots.Num_two.value);
-        }else{
-            response.ask("I cant work with what you just gave me, try asking again with another range","Ask again")
+    "IngredientsToRecipeIntent": function() {
+      var self = this;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
+      var ingredients = this.event.request.intent.slots;
+      var ingr_array = [];
+      for (var key in ingredients) {
+        for (var name in ingredients[key]){
+          if (name == 'value'){
+            ingr_array.push(ingredients[key][name])
+          }
         }
-        //generate random number in the given range
-        var randomNum = Math.floor(Math.random()*(max-min+1))+min;
-        response.tellWithCard(randomNum.toString());
+      };
+      var options = {
+        uri: url + "/recipe",
+        method: "POST",
+        json: { "ingredients": ingr_array },
+        qs: {userId}
+      };
+      console.log(options);
+      request(options, function(err, res, body){
+        if (!err && res.statusCode == 200){
+          console.log(body);
+          var cardTitle = 'Recipe Name';
+          var cardContent = body.recipe_name;
+          var speechOutput = 'would you like to make ' + body.recipe_name;
+          if ('image_url' in body){
+            var imageObj = {
+              smallImageUrl: body.image_url,
+              largeImageUrl: body.image_url
+            };
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+          } else {
+            self.emit(':tellWithCard', speechOutput, cardTitle, cardContent);
+          }
+        } else {
+          self.emit(':ask', 'I could not find a recipe, try again with different ingredients');
+        }
+      })
     },
-    "AMAZON.HelpIntent": function (intent, session, response) {
-        response.ask("Give me some names or a range of numbers and I will choose one at random");
+    "AMAZON.YesIntent": function () {
+      this.emit('NextStepIntent');
+    },
+    "AMAZON.NoIntent": function () {
+      this.emit('NextRecipeIntent');
     }
 };
 
-// Create the handler that responds to the Alexa Request.
-exports.handler = function (event, context) {
-    // Create an instance of the Chooser skill.
-    var chooser = new Chooser();
-    chooser.execute(event, context);
+exports.handler = function(event, context, callback) {
+    var alexa = Alexa.handler(event, context);
+    alexa.appId = process.env.app_id;
+    alexa.registerHandlers(handlers);
+    alexa.execute();
 };
