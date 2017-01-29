@@ -14,14 +14,13 @@ app.secret_key = 'alexaramsay123'
 
 
 @app.route('/')
-def index():
+def get_list():
     if 'doctor_id' not in session:
         return redirect(url_for('login'))
     doctor_id = session['doctor_id']
-
     db_session = Session()
     db_doctor = db_session.query(Doctor).get(doctor_id)
-    return render_template('index.html', doctor=db_doctor)
+    return render_template('list.html', doctor=db_doctor)
 
 
 @app.route('/user/<int:user_id>')
@@ -33,7 +32,7 @@ def user(user_id):
     db_doctor = db_session.query(Doctor).get(doctor_id)
     db_user = db_session.query(User).get(user_id)
     if not db_user:
-        return redirect(url_for('index'))
+        return redirect(url_for('get_list'))
     return render_template('user.html', user=db_user, doctor=db_doctor)
 
 
@@ -55,7 +54,7 @@ def login():
         if not bcrypt.hashpw(password, db_doctor.password.encode('utf-8')) == db_doctor.password:
             return redirect(url_for('login'))
         session['doctor_id'] = db_doctor.id
-        return redirect(url_for('index'))
+        return redirect(url_for('get_list'))
 
 
 def get_recipe_set(db_user_ingredients, db_session):
@@ -82,9 +81,12 @@ def get_recipe():
         db_user = db_session.query(User).filter_by(alexa_id=alexa_id).first()
         if not db_user:
             return jsonify({"error": "Unable to find user"}), 404
+
         db_session.query(CurrentRecipe).delete()
         db_session.query(CurrentInstruction).delete()
         db_session.query(CurrentUserIngredients).delete()
+
+        # Get recipe based on user's ingredients
         if request.method == 'GET':
             db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id).all()
             db_user_ingredients = random.sample(list(db_user_ingredients), 2)
@@ -117,6 +119,8 @@ def get_recipe():
             else:
                 db_session.close()
                 return jsonify({"error": "Could not find a valid recipe"}), 400
+
+        # Get recipe based on input
         elif request.method == 'POST':
             ingredient_list = request.json['ingredients']
 
@@ -159,12 +163,31 @@ def get_recipe():
 def get_step():
     db_session = Session()
 
+    alexa_id = request.args.get('userId')
+    if not alexa_id:
+        return jsonify({"error": "Invalid Alexa ID"}), 404
+    db_user = db_session.query(User).filter_by(alexa_id=alexa_id).first()
+    if not db_user:
+        return jsonify({"error": "Unable to find user"}), 404
+
     db_current_recipe = db_session.query(CurrentRecipe).first()
 
     db_current_instruction = db_session.query(CurrentInstruction).filter_by(status_id=1).first()
 
+    # Completed
     if db_current_instruction is None:
         db_current_recipe.status_id = 3
+        db_session.add(db_current_recipe)
+
+        db_completed_recipe = db_session.query(CompletedRecipe).filter_by(user_id=db_user.id,
+                                                                          recipe_id=db_current_recipe.recipe_id).first()
+
+        if not db_completed_recipe:
+            db_completed_recipe = CompletedRecipe()
+            db_completed_recipe.recipe_id = db_current_recipe.recipe_id
+            db_completed_recipe.user_id = db_user.id
+            db_session.add(db_completed_recipe)
+
         db_session.commit()
         return jsonify({"instruction": "You are done."})
 
@@ -213,3 +236,30 @@ def get_current_recipe():
     db_current_recipe = db_session.query(CurrentRecipe).first()
 
     return jsonify(db_current_recipe.to_dict())
+
+
+@app.route("/add_ingredient", methods=['POST'])
+def add_ingredient():
+    user_id = int(request.form['user_id'])
+    ingredient_name = request.form['ingredient']
+
+    db_session = Session()
+    db_user_ingredient = UserIngredients()
+    db_user_ingredient.user_id = user_id
+    db_user_ingredient.name = ingredient_name
+    db_session.add(db_user_ingredient)
+    db_session.commit()
+
+    return redirect(url_for('get_list'))
+
+
+@app.route("/remove_ingredient/<int:ingredient_id>", methods=['GET'])
+def delete_ingredient(ingredient_id):
+    db_session = Session()
+    db_user_ingredient = db_session.query(UserIngredients).get(ingredient_id)
+    if not db_user_ingredient:
+        return redirect(url_for('get_list'))
+    db_session.delete(db_user_ingredient)
+    db_session.commit()
+
+    return redirect(url_for('get_list'))

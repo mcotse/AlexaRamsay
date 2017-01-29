@@ -83,7 +83,7 @@ class User(Base):
     age = Column(Integer)
     gender = Column(CHAR)
     img_url = Column(String(255))
-    
+
     doctor_id = Column(Integer, ForeignKey("doctor.id"))
 
     doctor = relationship("Doctor", backref="patients", lazy='subquery')
@@ -193,4 +193,39 @@ class Doctor(Base):
             password=self.password,
             first_name=self.first_name,
             last_name=self.last_name
+        )
+
+
+class CompletedRecipe(Base):
+    __tablename__ = "completed_recipes"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    recipe_id = Column(Integer, ForeignKey("recipe.id"))
+
+    user = relationship("User", backref="completed_recipes")
+    recipe = relationship("Recipe", backref="completed_recipes")
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            user=self.user.to_dict(),
+            recipe=self.recipe.to_dict()
+        )
+
+class CompletedIngredient(Base):
+    __tablename__ = "completed_ingredients"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    ingredient_id = Column(Integer, ForeignKey("ingredient.id"))
+
+    user = relationship("User", backref="completed_ingredients")
+    ingredient = relationship("Ingredient", backref="completed_ingredients")
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            user=self.user.to_dict(),
+            ingredient=self.ingredient.to_dict()
         )

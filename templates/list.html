@@ -1,84 +1,90 @@
+{% extends 'layout/admin_layout.html' %}
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/static/css/list.css">
-<!-- <head> -->
-  <!-- <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/list.css">
+{% endblock %}
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-</head>
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a href="#" class="navbar-left"><img src="ramsay-logo-1.png"></a>
-    </div>
-  </div>
-</nav>
-<body id="bootstrap-overrides">
-<div class="container-fluid">
-  <div class="row content">
-    <div style="background-color: #9DE07B;">
-    <div class="col-sm-3 sidenav">
-      <h4>Patients</h4>
-      <ul class="nav nav-pills nav-stacked">
-        <li class="active "><a href="#section1">Jeremy</a></li>
-        <li class="active "><a href="#section1">Daniel</a></li>
-        <li class="active "><a href="#section1">Nelani</a></li>
-        <li class="active "><a href="#section1">Jack</a></li>
-      </ul><br>
-
-    </div>
-  </div>
-    <div class="col-sm-9">
-      <h2>Jeremy's Profile</h2>
-      <div class="well">
-      <div class="container-fluid">
-
-        <div style="float: left;">
-          <img style="width: 250px; height:180px; padding-top: 5px;" src="PHOTO.jpg"/>
+{% block body %}
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="#" class="navbar-left"><img src="/static/img/ramsay-logo-1.png"></a>
+            </div>
         </div>
-    <div style="margin-left: 275px;">
-      <ul class="list-group">
-        <li class="list-group-item">Age: </li>
-        <li class="list-group-item">Sex: </li>
-        <li class="list-group-item">Height: </li>
-        <li class="list-group-item">Weight: </li>
-      </ul>
-    </div>
-    </div>
-    </div>
-    <hr>
-      <h2>Add Ingredients:</h2>
-      <form action="action_page.php">
-       <div class="input-group">
-        <input type="text" id ="inputfood" name ="food" class="form-control" placeholder="Search for food..">
-        <input style="margin-top: 10px;" type="submit" class="btn btn-success" value="Submit">
-      </div>
-      </form>
-      <hr>
-<h2>Ingredients List:</h2>
-      <div class="well">
+    </nav>
+    <div class="container-fluid">
+        <div class="row content">
+            <div style="background-color: #9DE07B;">
+                <div class="col-sm-3 sidenav">
+                    <h4>Patients</h4>
+                    <ul class="nav nav-pills nav-stacked">
+                        {% for patient in doctor.patients %}
+                            <li class="active">
+                                <a href="#section{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <br/>
+                </div>
+            </div>
+            {% for patient in doctor.patients %}
+                <div class="col-sm-9 {% if loop.index0 == 0 %}show{% else %}hidden{% endif %}">
+                    <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+                    <div class="well">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img class="img-responsive" src="{{ patient.img_url }}"/>
+                                </div>
+                                <div class="col-sm-9">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">Age: {{ patient.age }}</li>
+                                        <li class="list-group-item">Sex: {{ patient.gender }}</li>
+                                        <li class="list-group-item">Height: {{ patient.height }} cm</li>
+                                        <li class="list-group-item">Weight: {{ patient.weight }} lbs</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Add Ingredients:</h2>
+                    <form action="/add_ingredient" method="POST">
+                        <input type="text" hidden name="user_id" value="{{ patient.id }}">
+                        <div class="input-group">
+                            <input type="text" id="inputfood" name="ingredient" class="form-control"
+                                   placeholder="Enter ingredient">
+                            <input style="margin-top: 10px;" type="submit" class="btn btn-success" value="Add">
+                        </div>
+                    </form>
+                    <hr>
+                    <h2>Ingredients List:</h2>
+                    <div class="well">
+                        <table class="table">
+                            {% for ingredient in patient.user_ingredients %}
+                                <tr>
+                                    <td>
+                                        <a href="/remove_ingredient/{{ ingredient.id }}">
+                                            <span class="glyphicon glyphicon-remove danger" aria-hidden="true"
+                                                  style="color: red; margin-right: 10px;"></span>
+                                        </a>
+                                        {{ ingredient.name }}
 
-      <ul class="nav nav-pills nav-stacked">
-        <li class="active ">
-          <p style="color: red; float: left;">&#10006  </p>
-          <p style="padding-left: 10px;">Carrots</p>
-        </li>
-        <li class="active ">
-          <p style="color: red; float: left;">&#10006  </p>
-          <p style="padding-left: 10px;">Brown bread</p>
-        </li>
-      </ul>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
     </div>
-      <br>
-      <p></p>
-      <br><br>
-    </>
-  </div>
-</>
+{% endblock %}
 
+{% block scripts %}
+    <script type="text/javascript">
 
-<!-- </body>
-</html> -->
+    </script>
+{% endblock %}
