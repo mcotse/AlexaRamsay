@@ -13,7 +13,7 @@ var handlers = {
     },
     "NextRecipeIntent": function () {
       var self = this;
-      var userId = this.event.session.user.userId;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
       var options = {
         uri: url + "/recipe",
         method: "GET",
@@ -33,7 +33,7 @@ var handlers = {
     },
     "CurrentRecipeIntent": function () {
       var self = this;
-      var userId = this.event.session.user.userId;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
       var options = {
         uri: url + "/current_recipe",
         method: "GET",
@@ -53,7 +53,7 @@ var handlers = {
     },
     "NextStepIntent": function () {
       var self = this;
-      var userId = this.event.session.user.userId;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
       var options = {
         uri: url + "/previous_step",
         method: "GET",
@@ -71,7 +71,7 @@ var handlers = {
     },
     "LastStepIntent": function () {
       var self = this;
-      var userId = this.event.session.user.userId;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
       var options = {
         uri: url + "/previous_step",
         method: "GET",
@@ -89,7 +89,7 @@ var handlers = {
     },
     "StartOverStepIntent": function () {
       var self = this;
-      var userId = this.event.session.user.userId;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
       var options = {
         uri: url + "/current_recipe",
         method: "GET",
@@ -116,7 +116,7 @@ var handlers = {
     },
     "IngredientsToRecipeIntent": function() {
       var self = this;
-      var userId = this.event.session.user.userId;
+      var userId = this.event.session.user.userId.replace('amzn1.ask.account.','');
       var ingredients = this.event.request.intent.slots;
       var ingr_array = [];
       for (var key in ingredients) {
