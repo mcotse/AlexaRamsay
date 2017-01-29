@@ -65,13 +65,15 @@ def get_recipe():
     db_session.query(CurrentInstruction).delete()
     db_session.query(CurrentUserIngredients).delete()
     alexa_id = request.args.get('userId')
+    if not alexa_id:
+        return jsonify({"error": "Invalid Alexa ID"}), 404
     db_user = db_session.query(User).filter_by(alexa_id=alexa_id).first()
     if not db_user:
         return jsonify({"error": "Unable to find user"}), 404
 
     if request.method == 'GET':
         db_user_ingredients = db_session.query(UserIngredients).filter_by(user_id=db_user.id).all()
-        db_user_ingredients = random.sample(list(db_user_ingredients), 3)
+        db_user_ingredients = random.sample(list(db_user_ingredients), 2)
         recipe_id_set = None
         for db_user_ingredient in db_user_ingredients:
             db_ingredients = db_session.query(Ingredient).filter_by(name=db_user_ingredient.name).all()
@@ -79,11 +81,11 @@ def get_recipe():
             if recipe_id_set is None:
                 recipe_id_set = tmp_recipe_set
             else:
-                recipe_id_set = recipe_id_set & tmp_recipe_set
+                recipe_id_set = recipe_id_set | tmp_recipe_set
 
-            db_current_user_ingredient = CurrentUserIngredients()
-            db_current_user_ingredient.user_ingredient_id = db_user_ingredient.id
-            db_session.add(db_current_user_ingredient)
+            # db_current_user_ingredient = CurrentUserIngredients()
+            # db_current_user_ingredient.user_ingredient_id = db_user_ingredient.id
+            # db_session.add(db_current_user_ingredient)
 
         if recipe_id_set is not None and len(recipe_id_set) > 0:
             recipe_id = random.choice(list(recipe_id_set))
