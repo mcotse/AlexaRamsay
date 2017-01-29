@@ -75,7 +75,7 @@
         background: transparent !important ;
     }
     #sidebar > ul > li > ul.sub > li > a:hover {
-        
+
     }
 
 
@@ -224,6 +224,7 @@
 
     .img-responsive {
         width: 100%;
+        border-radius: 20px !important;
     }
 
 }
@@ -289,7 +290,3 @@
     }
 
 }
-
-
-
-

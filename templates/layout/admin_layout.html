@@ -22,7 +22,7 @@
 <section id="container">
     <aside>
         <div id="sidebar" class="nav-collapse ">
-            <div class="row centered">
+            <div class="row centered" style="margin-top: -40px;">
                 <img src="/static/img/ramsay-logo-1.png" class="img-responsive centered"
                      style="max-height: 50px; margin-left: 21%;">
             </div>
@@ -32,13 +32,35 @@
             </div>
 
             <h5 class="centered">Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h5>
-
+            <h4 style="color:#44836d; margin-top: 100px; margin-bottom: -20px">Patients</h4>
+            <ul class="nav nav-pills nav-stacked" style="padding: 25px;">
+                {% for patient in doctor.patients %}
+                    <li class="active">
+                        <a href="#" style="margin: 10 0 10 0; border-radius: 0 !important;"
+                           onclick="toggleTab('#tab_user_{{ patient.id }}'); return false;">{{ patient.first_name }} {{ patient.last_name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <br/>
             <li class="mt">
                 <a {% if request.path == '/' %}class="active"{% endif %} href="/">
                     <i class="fa fa-dashboard"></i>
                     <!-- <span>Patient Portal</span> -->
                 </a>
             </li>
+
+            <!-- <div class="col-sm-2 sidenav">
+                <h4>Patients</h4>
+                <ul class="nav nav-pills nav-stacked">
+                    {% for patient in doctor.patients %}
+                        <li class="active">
+                            <a href="#"
+                               onclick="toggleTab('#tab_user_{{ patient.id }}'); return false;">{{ patient.first_name }} {{ patient.last_name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <br/>
+            </div> -->
 
 
         </div>
