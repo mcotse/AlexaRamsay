@@ -1,3 +1,4 @@
 sqlalchemy
 flask
 beautifulsoup4
+nltk

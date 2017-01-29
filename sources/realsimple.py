@@ -20,21 +20,28 @@ def scrape(recipe_url):
     for ingredient in ingredients:
         name = ingredient.contents[3].text.strip() + " " + ingredient.contents[5].text.strip()
         db_ingredient = Ingredient()
-        db_ingredient.name = name
+        db_ingredient.name = name.strip()
         db_ingredient.recipe_id = db_recipe.id
 
         db_session.add(db_ingredient)
 
     instructions = soup.find('section', itemprop='recipeInstructions').find_all('li')
+    all_instructions = ""
+
+    for instruction in instructions:
+        all_instructions += instruction.text.strip()
+
+    instructions = all_instructions.split('.')
     step_number = 0
     for instruction in instructions:
-        step_number += 1
-        db_instruction = Instruction()
-        db_instruction.recipe_id = db_recipe.id
-        db_instruction.step_number = step_number
-        db_instruction.text = instruction.text.strip()
+        if instruction is not "":
+            step_number += 1
+            db_instruction = Instruction()
+            db_instruction.recipe_id = db_recipe.id
+            db_instruction.step_number = step_number
+            db_instruction.text = instruction.strip() + "."
 
-        db_session.add(db_instruction)
+            db_session.add(db_instruction)
 
 
 def search(query):
@@ -52,8 +59,5 @@ def search(query):
 
 
 db_session = Session()
-search('chicken')
-search('apple')
-search('corn')
-search('avocado')
+search('beef')
 db_session.commit()
